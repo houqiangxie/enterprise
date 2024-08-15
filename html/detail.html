@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .notification-box{
+        display: flex;
+      flex-direction: column-reverse;
+      height: 100%;
+      flex-direction:cloumn;
+      overflow:auto;
+    }
+    .notification {
+      padding: 15px;
+      background: #444;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      
+    }
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .message {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+    <div class="notification-box">
+        <div class="notification">
+          <div class="title">New Message</div>
+          <div class="message">You have a new message from John Doe.</div>
+        </div>
+    </div>
+</body>
+<script>
+    const { ipcRenderer } = require('electron');
+
+    let isMouseHovered = false;
+    const box =document.querySelector('.notification-box')
+    // 监听鼠标悬浮
+    box.addEventListener('mouseenter', () => {
+      isMouseHovered = true;
+      ipcRenderer.send('mouse-hover', true);
+    });
+
+    box.addEventListener('mouseleave', () => {
+      isMouseHovered = false;
+      ipcRenderer.send('mouse-hover', false);
+    });
+
+    ipcRenderer.on('set-hover-listeners', () => {
+      ipcRenderer.send('mouse-hover', isMouseHovered);
+    });
+  </script>
+</html>
