@@ -12,6 +12,10 @@
   },
   "build": {
     "appId": "com.enterprise.app",
-    "productName": "enterprise"
+    "productName": "enterprise",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true 
+    }
   }
 }

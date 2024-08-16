@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: houqiangxie
+ * @Date: 2024-08-15 11:00:07
+ * @LastEditors: houqiangxie
+ * @LastEditTime: 2024-08-16 14:35:20
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,9 +29,10 @@
       height: 100%;
       flex-direction:cloumn;
       overflow:auto;
+      gap: 4px;
     }
     .notification {
-      padding: 15px;
+      padding: 4px 6px;
       background: #444;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -40,25 +49,27 @@
   </style>
 </head>
 <body>
-    <div class="notification-box">
-        <div class="notification">
-          <div class="title">New Message</div>
-          <div class="message">You have a new message from John Doe.</div>
+    <div class="notification-box" id="app">
+        <div class="notification" v-for="todo in todoList" @click="handleClick(todo)">
+          <div class="title">{{todo.title}}</div>
+          <div class="message">{{todo.content}}</div>
         </div>
     </div>
 </body>
+<script src="../js/vue.global.prod.js"></script>
 <script>
+    const { createApp, ref, onMounted, nextTick,reactive,toRaw } = Vue
     const { ipcRenderer } = require('electron');
-
     let isMouseHovered = false;
-    const box =document.querySelector('.notification-box')
+    // const box =document.querySelector('.notification-box')
+    const body =document.body
     // 监听鼠标悬浮
-    box.addEventListener('mouseenter', () => {
+    body.addEventListener('mouseenter', () => {
       isMouseHovered = true;
       ipcRenderer.send('mouse-hover', true);
     });
 
-    box.addEventListener('mouseleave', () => {
+    body.addEventListener('mouseleave', () => {
       isMouseHovered = false;
       ipcRenderer.send('mouse-hover', false);
     });
@@ -66,5 +77,24 @@
     ipcRenderer.on('set-hover-listeners', () => {
       ipcRenderer.send('mouse-hover', isMouseHovered);
     });
+    let defaultData =[]
+    const app =createApp({
+      setup(){
+        const todoList= ref(defaultData)
+        ipcRenderer.on('todoList', (e,data) => {
+          todoList.value = data||[];
+        });
+
+        const handleClick = (todo) => {
+          ipcRenderer.send('todoListClick', toRaw(todo))
+        }
+        return {
+          todoList,
+          handleClick
+        }
+      }
+    })
+    app.mount('#app')
+    // app.mount('#notic')
   </script>
 </html>
